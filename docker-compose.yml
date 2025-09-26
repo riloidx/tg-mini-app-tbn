@@ -1,23 +1,28 @@
 version: "3.8"
 
 services:
+  # FastAPI приложение
   app:
     build: .
     env_file: .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/postgres
     ports:
       - "8000:8000"
     depends_on:
-      - supabase_db
+      - db
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
     volumes:
       - ./app:/app/app
       - ./.env:/app/.env
 
+  # Бот
   bot:
     build: .
     env_file: .env
     depends_on:
       - app
+      - db
     environment:
       - PYTHONPATH=/app
     command: ["python", "app/bot.py"]
@@ -25,17 +30,31 @@ services:
       - ./app:/app/app
       - ./.env:/app/.env
 
-  supabase_db:
+  # PostgreSQL для Supabase
+  db:
     image: postgres:15.4
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
+      POSTGRES_PORT: 5432
     volumes:
       - supabase_db_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+
+  # pgAdmin4 Web UI
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
 
 volumes:
   supabase_db_data:

@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     app_env: str = "development"
     secret_key: str = "default-secret-key-change-in-production"
     telegram_bot_token: str = ""
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
+    database_url: str = "postgresql+asyncpg://postgres:postgres@db:5432/postgres"
     supabase_url: str = ""
     supabase_key: str = ""
     initdata_max_age_seconds: int = 86400
