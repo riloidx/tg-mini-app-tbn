@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - supabase_db
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    volumes:
+      - ./app:/app/app
+      - ./.env:/app/.env
+
+  bot:
+    build: .
+    env_file: .env
+    depends_on:
+      - app
+    environment:
+      - PYTHONPATH=/app
+    command: ["python", "app/bot.py"]
+    volumes:
+      - ./app:/app/app
+      - ./.env:/app/.env
+
+  supabase_db:
+    image: postgres:15.4
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - supabase_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  supabase_db_data:
