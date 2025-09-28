@@ -48,14 +48,19 @@ def verify_telegram_init_data(init_data: str) -> InitDataValidationResult:
         # Create data_check_string
         data_check_string = "\n".join([f"{k}={v}" for k, v in sorted(parsed_data.items())])
         
-        # Calculate secret key
-        secret_key = hashlib.sha256(settings.telegram_bot_token.encode()).digest()
-        
-        # Calculate HMAC
+        # Calculate secret key for WebApp init_data verification
+        # Per Telegram WebApp spec: secret_key = HMAC_SHA256("WebAppData", bot_token)
+        secret_key = hmac.new(
+            key=b"WebAppData",
+            msg=settings.telegram_bot_token.encode(),
+            digestmod=hashlib.sha256
+        ).digest()
+
+        # Calculate HMAC over data_check_string with the derived secret_key
         calculated_hash = hmac.new(
-            secret_key,
-            data_check_string.encode(),
-            hashlib.sha256
+            key=secret_key,
+            msg=data_check_string.encode(),
+            digestmod=hashlib.sha256
         ).hexdigest()
         
         if calculated_hash != received_hash:
