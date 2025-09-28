@@ -29,7 +29,7 @@ else:
 if dp is not None:
     @dp.message(CommandStart())
     async def start_handler(message: types.Message):
-        webapp = WebAppInfo(url="https://your-webapp-url.com")
+        webapp = WebAppInfo(url="https://tbn-frontend.vercel.app")
         keyboard = InlineKeyboardMarkup(
             inline_keyboard=[
                 [InlineKeyboardButton(text="Пройти тест", web_app=webapp)]
