@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api import auth, test, results
+from app.api.auth import router as auth_router
+from app.api.test import router as test_router
+from app.api.results import router as results_router
 
 app = FastAPI(title="Telegram Test API", version="1.0.0")
 
@@ -14,9 +16,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
-app.include_router(test.router, prefix="/api/test", tags=["test"])
-app.include_router(results.router, prefix="/api/results", tags=["results"])
+app.include_router(auth_router, prefix="/auth", tags=["auth"])
+app.include_router(test_router, prefix="/api/test", tags=["test"])
+app.include_router(results_router, prefix="/api/results", tags=["results"])
 
 
 @app.get("/")
