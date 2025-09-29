@@ -27,7 +27,7 @@ class Result(Base):
     __tablename__ = "results"
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="RESTRICT"))
     taken_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
     total_score: Mapped[int] = mapped_column(Integer, nullable=False)
     happiness_score: Mapped[int] = mapped_column(Integer, nullable=False)

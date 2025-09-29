@@ -50,9 +50,18 @@ CREATE INDEX IF NOT EXISTS idx_results_taken_at ON results(taken_at);
 CREATE INDEX IF NOT EXISTS idx_questions_number ON questions(number);
 CREATE INDEX IF NOT EXISTS idx_questions_category ON questions(category);
 CREATE INDEX IF NOT EXISTS idx_question_options_question_id ON question_options(question_id);
--- Очистка таблиц перед заполнением
-TRUNCATE TABLE question_options CASCADE;
-TRUNCATE TABLE questions CASCADE;
+-- Проверяем, нужно ли заполнять таблицы (только если вопросов нет)
+DO $$ BEGIN IF NOT EXISTS (
+    SELECT 1
+    FROM questions
+    LIMIT 1
+) THEN -- Таблица пустая, можно заполнять
+NULL;
+ELSE -- Таблица уже заполнена, выходим
+RAISE NOTICE 'Questions already exist, skipping initialization';
+RETURN;
+END IF;
+END $$;
 -- Заполнение таблицы вопросов
 -- Категория "Счастье" (вопросы 1-36, макс. 42 балла)
 INSERT INTO questions (number, text, category, max_points)
@@ -336,8 +345,7 @@ VALUES (
         'freedom',
         2
     );
---
-Заполнение вариантов ответов для вопросов категории "Счастье" -- Вопрос 1: Проходили полный Чек-Ап здоровья ТБН за последние 2 года?
+--Заполнение вариантов ответов для вопросов категории "Счастье" -- Вопрос 1: Проходили полный Чек-Ап здоровья ТБН за последние 2 года?
 INSERT INTO question_options (question_id, label, points, sort_index)
 VALUES (
         (
