@@ -13,6 +13,10 @@ async def get_user_by_telegram_id(db: AsyncSession, telegram_id: int) -> Optiona
     return result.scalar_one_or_none()
 
 
+async def get_user_by_id(db: AsyncSession, user_id: int) -> Optional[User]:
+    return await db.get(User, user_id)
+
+
 async def create_or_update_user(
     db: AsyncSession,
     telegram_id: int,
@@ -109,6 +113,3 @@ async def get_user_results(db: AsyncSession, user_id: int) -> List[Result]:
         .order_by(Result.taken_at.desc())
     )
     return result.scalars().all()
-
-async def get_user_by_id(db: AsyncSession, user_id: int) -> Optional[User]:
-    return await db.get(User, user_id)
