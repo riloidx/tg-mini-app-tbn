@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import verify_telegram_init_data, create_access_token
+from app.core.security import verify_telegram_init_data
 from app.db.base import get_db
 from app.db.crud import create_or_update_user
 from app.schemas.auth import InitDataRequest, AuthResponse, UserResponse
@@ -28,8 +28,6 @@ async def verify_init_data(
         username=user_data.username
     )
     
-    token = create_access_token({"user_id": user.id, "telegram_id": user.telegram_id})
-    
     return AuthResponse(
         ok=True,
         user=UserResponse(
@@ -37,6 +35,5 @@ async def verify_init_data(
             first_name=user.first_name,
             last_name=user.last_name,
             username=user.username
-        ),
-        token=token
+        )
     )

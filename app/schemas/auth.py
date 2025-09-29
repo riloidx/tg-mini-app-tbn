@@ -16,5 +16,4 @@ class UserResponse(BaseModel):
 class AuthResponse(BaseModel):
     ok: bool
     user: Optional[UserResponse] = None
-    token: Optional[str] = None
     error: Optional[str] = None
