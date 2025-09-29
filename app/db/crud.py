@@ -109,3 +109,6 @@ async def get_user_results(db: AsyncSession, user_id: int) -> List[Result]:
         .order_by(Result.taken_at.desc())
     )
     return result.scalars().all()
+async 
+def get_user_by_id(db: AsyncSession, user_id: int) -> Optional[User]:
+    return await db.get(User, user_id)
