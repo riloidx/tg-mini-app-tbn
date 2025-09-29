@@ -7,6 +7,7 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY ./app /app/app
 COPY ./.env /app/.env
+COPY ./init_database.sql /app/init_database.sql
 
 ENV PYTHONUNBUFFERED=1
 
