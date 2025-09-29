@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api import auth, test, results
+from app.api import auth, results
 
 app = FastAPI(title="Telegram Test API", version="1.0.0")
 
