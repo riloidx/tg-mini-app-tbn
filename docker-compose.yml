@@ -6,7 +6,8 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/postgres
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command: ["python", "init_db.py"]
     volumes:
       - ./init_database.sql:/app/init_database.sql
@@ -24,27 +25,36 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - init-db
+      db:
+        condition: service_healthy
+      init-db:
+        condition: service_completed_successfully
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
     volumes:
       - ./app:/app/app
       - ./.env:/app/.env
+    restart: unless-stopped
 
   # Бот
   bot:
     build: .
     env_file: .env
     depends_on:
-      - app
-      - db
+      db:
+        condition: service_healthy
+      app:
+        condition: service_started
+      init-db:
+        condition: service_completed_successfully
     environment:
       - PYTHONPATH=/app
     command: ["python", "app/bot.py"]
     volumes:
       - ./app:/app/app
       - ./.env:/app/.env
+    restart: unless-stopped
 
-  # PostgreSQL для Supabase
+  # PostgreSQL база данных
   db:
     image: postgres:15.4
     restart: always
@@ -52,23 +62,32 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
-      POSTGRES_PORT: 5432
     volumes:
-      - supabase_db_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
-  # pgAdmin4 Web UI
+  # pgAdmin4 для просмотра базы данных
   pgadmin:
     image: dpage/pgadmin4
-    restart: always
+    restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
 
 volumes:
-  supabase_db_data:
+  postgres_data:
+  pgadmin_data:
