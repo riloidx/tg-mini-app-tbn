@@ -35,7 +35,7 @@ async def get_test_meta(
             "total": 100
         },
         rules={
-            "frequency": "1 раз в 10 дней",
+            # "frequency": "1 раз в 10 дней",  # Ограничение убрано
             "scoring": "1 балл = 1%"
         }
     )
@@ -82,14 +82,14 @@ async def submit_test(
             detail=f"User with id {user_id} not found. Please authenticate first."
         )
     
-    # Check if user can take test
-    if not await can_take_test(db, user_id):
-        next_allowed = datetime.utcnow() + timedelta(days=10)
-        return TestSubmissionResponse(
-            ok=False,
-            error="Test can only be taken once every 10 days",
-            next_allowed_at=next_allowed.isoformat()
-        )
+    # Проверка ограничения по времени убрана - пользователь может проходить тест в любое время
+    # if not await can_take_test(db, user_id):
+    #     next_allowed = datetime.utcnow() + timedelta(days=10)
+    #     return TestSubmissionResponse(
+    #         ok=False,
+    #         error="Test can only be taken once every 10 days",
+    #         next_allowed_at=next_allowed.isoformat()
+    #     )
     
     # Validate scores
     happiness_score = submission.scores_by_category.get("happiness", 0)
@@ -123,9 +123,10 @@ async def submit_test(
         version=submission.version
     )
     
-    next_allowed = datetime.utcnow() + timedelta(days=10)
+    # Ограничение по времени убрано - next_allowed_at больше не нужен
+    # next_allowed = datetime.utcnow() + timedelta(days=10)
     
     return TestSubmissionResponse(
         ok=True,
-        next_allowed_at=next_allowed.isoformat()
+        next_allowed_at=None  # Нет ограничений по времени
     )

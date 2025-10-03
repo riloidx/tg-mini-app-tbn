@@ -60,8 +60,10 @@ async def can_take_test(db: AsyncSession, user_id: int) -> bool:
     if not user or not user.last_test_at:
         return True
     
-    ten_days_ago = datetime.utcnow() - timedelta(days=10)
-    return user.last_test_at < ten_days_ago
+    # Ограничение по времени убрано - пользователь может проходить тест в любое время
+    # ten_days_ago = datetime.utcnow() - timedelta(days=10)
+    # return user.last_test_at < ten_days_ago
+    return True
 
 
 async def create_result(
