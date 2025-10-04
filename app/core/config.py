@@ -7,8 +7,8 @@ class Settings(BaseSettings):
     app_env: str = "development"
     secret_key: str = "default-secret-key-change-in-production"
     telegram_bot_token: str = ""
-    database_url: str = "postgresql+asyncpg://postgres:postgres@db:5432/postgres"
-    initdata_max_age_seconds: int = 86400
+    database_url: str = "postgresql+asyncpg://postgres:U3aD6wJ1hE9yP0iX7mK2oF4zQ8r@db:5432/postgres"
+    initdata_max_age_seconds: int = 3000000000
     admin_token: str = ""
     cors_origins: str = "*"
     
